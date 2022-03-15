@@ -39,6 +39,20 @@
 /* variaveis globais                                                    */
 /************************************************************************/
 
+typedef struct  {
+	uint32_t year;
+	uint32_t month;
+	uint32_t day;
+	uint32_t week;
+	uint32_t hour;
+	uint32_t minute;
+	uint32_t second;
+} calendar;
+
+volatile char but_flag = 0;
+volatile char flag_rtc_second = 0;
+volatile char counter = 0;
+
 /************************************************************************/
 /* prototypes                                                           */
 /************************************************************************/
@@ -47,6 +61,9 @@ void init(void);
 void TC_init(Tc * TC, int ID_TC, int TC_CHANNEL, int freq);
 void pin_toggle(Pio *pio, uint32_t mask);
 static void RTT_init(float freqPrescale, uint32_t IrqNPulses, uint32_t rttIRQSource);
+void RTC_init(Rtc *rtc, uint32_t id_rtc, calendar t, uint32_t irq_type);
+void but_one_callback(void);
+void gfx_mono_draw_string(const char *str, const gfx_coord_t x, const gfx_coord_t y, const struct font *font);
 
 /************************************************************************/
 /* Handlers                                                             */
@@ -77,6 +94,24 @@ void TC2_Handler(void) {
 	pin_toggle(LED_ONE, LED_ONE_IDX_MASK);  
 }
 
+void TC3_Handler(void) {
+
+	volatile uint32_t status = tc_get_status(TC1, 0);
+	counter++;
+	
+}
+
+void TC4_Handler(void) {
+	/**
+	* Devemos indicar ao TC que a interrupção foi satisfeita.
+	* Isso é realizado pela leitura do status do periférico
+	**/
+	volatile uint32_t status = tc_get_status(TC1, 1);
+
+	/** Muda o estado do LED (pisca) **/
+	pin_toggle(LED_THREE, LED_THREE_IDX_MASK);  
+}
+
 void RTT_Handler(void) {
 	uint32_t ul_status;
 
@@ -95,6 +130,30 @@ void RTT_Handler(void) {
 
 }
 
+void RTC_Handler(void) {
+	uint32_t ul_status = rtc_get_status(RTC);
+	
+	/* second tick */
+	if ((ul_status & RTC_SR_SEC) == RTC_SR_SEC) {
+		// o código para irq de segundo vem aqui
+		flag_rtc_second = 1;
+	}
+	
+	/* Time or date alarm */
+	if ((ul_status & RTC_SR_ALARM) == RTC_SR_ALARM) {
+	}
+
+	rtc_clear_status(RTC, RTC_SCCR_SECCLR);
+	rtc_clear_status(RTC, RTC_SCCR_ALRCLR);
+	rtc_clear_status(RTC, RTC_SCCR_ACKCLR);
+	rtc_clear_status(RTC, RTC_SCCR_TIMCLR);
+	rtc_clear_status(RTC, RTC_SCCR_CALCLR);
+	rtc_clear_status(RTC, RTC_SCCR_TDERRCLR);
+}
+
+void but_one_callback(void){
+	but_flag = 1;
+}
 
 /************************************************************************/
 /* Funcoes                                                              */
@@ -129,8 +188,20 @@ void init(void){
 	// Inicializa dos botoes do display;
 	pmc_enable_periph_clk(BUT_ONE_ID);
 	
-	pio_set_input(BUT_ONE, BUT_ONE_IDX_MASK, PIO_PULLUP | PIO_DEBOUNCE);
-
+	pio_configure(BUT_ONE, PIO_INPUT, BUT_ONE_IDX_MASK, PIO_PULLUP | PIO_DEBOUNCE);
+	pio_set_debounce_filter(BUT_ONE, BUT_ONE_IDX_MASK, 60);
+	
+	pio_handler_set(BUT_ONE,
+	BUT_ONE_ID,
+	BUT_ONE_IDX_MASK,
+	PIO_IT_RISE_EDGE,
+	but_one_callback);
+	
+	pio_enable_interrupt(BUT_ONE, BUT_ONE_IDX_MASK);
+	pio_get_interrupt_status(BUT_ONE);
+	
+	NVIC_EnableIRQ(BUT_ONE_ID);
+	NVIC_SetPriority(BUT_ONE_ID, 4); // Prioridade 4
 }
 ;
 
@@ -193,21 +264,47 @@ static void RTT_init(float freqPrescale, uint32_t IrqNPulses, uint32_t rttIRQSou
 	
 }
 
+void RTC_init(Rtc *rtc, uint32_t id_rtc, calendar t, uint32_t irq_type) {
+	/* Configura o PMC */
+	pmc_enable_periph_clk(ID_RTC);
+
+	/* Default RTC configuration, 24-hour mode */
+	rtc_set_hour_mode(rtc, 0);
+
+	/* Configura data e hora manualmente */
+	rtc_set_date(rtc, t.year, t.month, t.day, t.week);
+	rtc_set_time(rtc, t.hour, t.minute, t.second);
+
+	/* Configure RTC interrupts */
+	NVIC_DisableIRQ(id_rtc);
+	NVIC_ClearPendingIRQ(id_rtc);
+	NVIC_SetPriority(id_rtc, 4);
+	NVIC_EnableIRQ(id_rtc);
+
+	/* Ativa interrupcao via alarme */
+	rtc_enable_interrupt(rtc,  irq_type);
+}
+
 /************************************************************************/
 /* Main                                                                 */
 /************************************************************************/
 
 int main (void)
 {
+	char str[25];
+	
 	board_init();
 	sysclk_init();
 	delay_init();
 	init();
+	 // Init OLED
+	 gfx_mono_ssd1306_init();
 
 	/* Configura Leds */
 	LED_init(0,LED_PIO,LED_PIO_ID,LED_PIO_IDX_MASK);
 	LED_init(0,LED_ONE,LED_ONE_ID,LED_ONE_IDX_MASK);
 	LED_init(0,LED_TWO,LED_TWO_ID,LED_TWO_IDX_MASK);
+	LED_init(1,LED_THREE,LED_THREE_ID,LED_THREE_IDX_MASK);
 	
 	 /** Configura timer TC0, canal 1 */
 	 TC_init(TC0, ID_TC1, 1, 5);
@@ -217,9 +314,44 @@ int main (void)
 	 tc_start(TC0, 2);  
 	 
 	 RTT_init(4, 16, RTT_MR_ALMIEN);
+	 
+	  /** Configura RTC */
+	  calendar rtc_initial = {2018, 3, 19, 12, 15, 45 ,1};
+	  RTC_init(RTC, ID_RTC, rtc_initial, RTC_SR_SEC);
+	  
+	  /* Leitura do valor atual do RTC */
+	  uint32_t current_hour, current_min, current_sec;
+	  uint32_t current_year, current_month, current_day, current_week;
+	  rtc_get_time(RTC, &current_hour, &current_min, &current_sec);
+	  rtc_get_date(RTC, &current_year, &current_month, &current_day, &current_week);	  
 
   /* Insert application code here, after the board has been initialized. */
 	while(1) {
+		if (flag_rtc_second == 1){
+			rtc_get_date(RTC, &current_year, &current_month, &current_day, &current_week);
+			rtc_get_time(RTC, &current_hour, &current_min, &current_sec);
+			sprintf(str, "%02d:%02d:%02d", current_hour, current_min, current_sec);
+			gfx_mono_draw_string(str, 0, 0, &sysfont);
+		}
+		
+		if (but_flag == 1){
+			TC_init(TC1, ID_TC3, 0, 1);
+			tc_start(TC1, 0);
+			
+			while(counter < 21){
+				//keep updating time
+				rtc_get_date(RTC, &current_year, &current_month, &current_day, &current_week);
+				rtc_get_time(RTC, &current_hour, &current_min, &current_sec);
+				sprintf(str, "%02d:%02d:%02d", current_hour, current_min, current_sec);
+				gfx_mono_draw_string(str, 0, 0, &sysfont);
+			}
+			tc_stop(TC1, 0);
+			TC_init(TC1, ID_TC4, 1, 10);
+			tc_start(TC1, 1);
+			
+			but_flag = 0;
+		}
+		
 		pmc_sleep(SAM_PM_SMODE_SLEEP_WFI);
 	}
 }
