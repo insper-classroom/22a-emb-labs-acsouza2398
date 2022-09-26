@@ -1,4 +1,4 @@
-name: cppcheck_lab1
+name: cppcheck_lab4
 
 on:
   push:
@@ -23,9 +23,9 @@ jobs:
         run: |
           sudo apt install cppcheck
       # ------------- Tests ----------------
-      - name: test_lab1
+      - name: test_lab4
         run: |
-          cppcheck 1-PIO-IO/src -i1-PIO-IO/src/ASF --enable=style,warning,performance > lab1.txt
+          cppcheck Lab4-TC-RTC-RTT/src -iLab4-TC-RTC-RTT/src/ASF --enable=style,warning,performance > lab4.txt
       # ------------- report ----------------
       - name: publish report    
         uses: mikeal/publish-to-github-action@master
