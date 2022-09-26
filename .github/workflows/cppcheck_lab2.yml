@@ -25,7 +25,7 @@ jobs:
       # ------------- Tests ----------------
       - name: test_lab2
         run: |
-          cppcheck Lab2-PIO-Driver/src -iLab2-PIO-Driver --enable=style,warning,performance 
+          cppcheck Lab2-PIO-Driver/src -iLab2-PIO-Driver/src/ASF --enable=style,warning,performance 
       # ------------- report ----------------
       - name: publish report    
         uses: mikeal/publish-to-github-action@master
