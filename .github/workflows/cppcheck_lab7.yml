@@ -1,0 +1,31 @@
+name: cppcheck_lab7
+
+on:
+  push:
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.8"
+
+      - name: Install dependencies
+        run: |
+          sudo apt install cppcheck
+      # ------------- Tests ----------------
+      - name: test_lab7
+        run: |
+          cppcheck Lab7-RTOS-LCD-LVGL/src -iLab7-RTOS-LCD-LVGL/src/ASF --enable=style,warning,performance > lab7.txt
+      # ------------- report ----------------
+      - name: publish report    
+        uses: mikeal/publish-to-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH_NAME: 'main' # your branch name goes here
