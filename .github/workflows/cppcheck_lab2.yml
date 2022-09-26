@@ -23,9 +23,9 @@ jobs:
         run: |
           sudo apt install cppcheck
       # ------------- Tests ----------------
-      - name: test_lab1
+      - name: test_lab2
         run: |
-          cppcheck 1-PIO-IO/src -i1-PIO-IO/src/ASF --enable=style,warning,performance 
+          cppcheck Lab2-PIO-Driver/src -iLab2-PIO-Driver --enable=style,warning,performance 
       # ------------- report ----------------
       - name: publish report    
         uses: mikeal/publish-to-github-action@master
