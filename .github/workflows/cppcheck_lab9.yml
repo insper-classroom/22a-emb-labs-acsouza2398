@@ -23,12 +23,6 @@ jobs:
       - name: test_lab9
         run: |
           cppcheck Lab9-RTOS-WIFI/RTOS-WIFI-WINC1500-get-EXT1/src -iLab9-RTOS-WIFI/RTOS-WIFI-WINC1500-get-EXT1/src/ASF --enable=style,warning,performance > lab9.txt
-      # ------------- report ----------------
-      - name: publish report    
-        uses: mikeal/publish-to-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH_NAME: 'main' # your branch name goes here
       # ------------- issues ----------------
       - name: Create Issue From File
         uses: peter-evans/create-issue-from-file@v4

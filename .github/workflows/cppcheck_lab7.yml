@@ -23,12 +23,6 @@ jobs:
       - name: test_lab7
         run: |
           cppcheck Lab7-RTOS-LCD-LVGL/src -iLab7-RTOS-LCD-LVGL/src/ASF --enable=style,warning,performance > lab7.txt
-      # ------------- report ----------------
-      - name: publish report    
-        uses: mikeal/publish-to-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH_NAME: 'main' # your branch name goes here
       # ------------- issues ----------------
       - name: Create Issue From File
         uses: peter-evans/create-issue-from-file@v4

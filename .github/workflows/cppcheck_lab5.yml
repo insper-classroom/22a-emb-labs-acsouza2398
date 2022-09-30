@@ -23,12 +23,6 @@ jobs:
       - name: test_lab5
         run: |
           cppcheck Lab5-HC-SR04\OLED-Xplained-Pro-SPI/src -iLab5-HC-SR04\OLED-Xplained-Pro-SPI/src/ASF --enable=style,warning,performance > lab5.txt
-      # ------------- report ----------------
-      - name: publish report    
-        uses: mikeal/publish-to-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH_NAME: 'main' # your branch name goes here
       # ------------- issues ----------------
       - name: Create Issue From File
         uses: peter-evans/create-issue-from-file@v4
