@@ -29,6 +29,7 @@ jobs:
         with:
           title: Issues Lab 5
           content-filepath: lab5.txt
+          issue-number: 15
           labels: |
             report
             automated issue
