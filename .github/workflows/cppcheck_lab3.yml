@@ -41,6 +41,7 @@ jobs:
         with:
           title: Issues Lab 3_1
           content-filepath: lab3_1.txt
+          issue-number: 10
           labels: |
             report
             automated issue
@@ -50,6 +51,7 @@ jobs:
         with:
           title: Issues Lab 3_2
           content-filepath: lab3_2.txt
+          issue-number: 11
           labels: |
             report
             automated issue
