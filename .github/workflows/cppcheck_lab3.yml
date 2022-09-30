@@ -39,8 +39,17 @@ jobs:
       - name: Create Issue From File
         uses: peter-evans/create-issue-from-file@v4
         with:
-          title: Issues Lab 3
-          content-filepath: lab3.txt
+          title: Issues Lab 3_1
+          content-filepath: lab3_1.txt
+          labels: |
+            report
+            automated issue
+      # ------------- issues ----------------
+      - name: Create Issue From File
+        uses: peter-evans/create-issue-from-file@v4
+        with:
+          title: Issues Lab 3_2
+          content-filepath: lab3_2.txt
           labels: |
             report
             automated issue
