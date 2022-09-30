@@ -33,6 +33,7 @@ jobs:
         with:
           title: Issues Lab 6_1
           content-filepath: lab6_1.txt
+          issue-number: 13
           labels: |
             report
             automated issue
@@ -42,6 +43,7 @@ jobs:
         with:
           title: Issues Lab 6_2
           content-filepath: lab6_2.txt
+          issue-number: 14
           labels: |
             report
             automated issue
