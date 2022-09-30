@@ -33,3 +33,21 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH_NAME: 'main' # your branch name goes here
+      # ------------- issues ----------------
+      - name: Create Issue From File
+        uses: peter-evans/create-issue-from-file@v4
+        with:
+          title: Issues Lab 6_1
+          content-filepath: lab6_1.txt
+          labels: |
+            report
+            automated issue
+      # ------------- issues ----------------
+      - name: Create Issue From File
+        uses: peter-evans/create-issue-from-file@v4
+        with:
+          title: Issues Lab 6_2
+          content-filepath: lab6_2.txt
+          labels: |
+            report
+            automated issue
