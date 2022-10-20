@@ -35,6 +35,9 @@ jobs:
           labels: |
             report
             automated issue
+      # ------------- Fail ----------------
+      - name: Error
+        if: steps.id.outputs.log != ' '
         run:
           echo "Erro no Lab 3.1"
           exit 1
@@ -53,6 +56,9 @@ jobs:
           labels: |
             report
             automated issue
+      # ------------- Fail ----------------
+      - name: Error
+        if: steps.id.outputs.log != ' '
         run:
           echo "Erro no Lab 3.2"
           exit 1
