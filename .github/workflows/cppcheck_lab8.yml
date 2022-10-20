@@ -22,14 +22,18 @@ jobs:
       # ------------- Tests ----------------
       - name: test_lab8
         run: |
-          cppcheck Lab8-RTOS-Mutex/src -iLab8-RTOS-Mutex/src/ASF --enable=style,warning,performance > lab8.txt
+          cppcheck Lab8-RTOS-Mutex/src -iLab8-RTOS-Mutex/src/ASF --enable=style,warning,performance 2> lab8.txt
+          echo ::set-output name=log::lab8.txt
       # ------------- issues ----------------
       - name: Create Issue From File
         uses: peter-evans/create-issue-from-file@v4
+        if: steps.id.outputs.log != ' '
         with:
           title: Issues Lab 8
           content-filepath: lab8.txt
-          issue-number: 8
           labels: |
             report
             automated issue
+        run:
+          echo "Erro no Lab 8"
+          exit 1

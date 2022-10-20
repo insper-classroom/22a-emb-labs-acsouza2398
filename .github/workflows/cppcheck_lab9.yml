@@ -22,14 +22,18 @@ jobs:
       # ------------- Tests ----------------
       - name: test_lab9
         run: |
-          cppcheck Lab9-RTOS-WIFI/RTOS-WIFI-WINC1500-get-EXT1/src -iLab9-RTOS-WIFI/RTOS-WIFI-WINC1500-get-EXT1/src/ASF --enable=style,warning,performance > lab9.txt
+          cppcheck Lab9-RTOS-WIFI/RTOS-WIFI-WINC1500-get-EXT1/src -iLab9-RTOS-WIFI/RTOS-WIFI-WINC1500-get-EXT1/src/ASF --enable=style,warning,performance 2> lab9.txt
+          echo ::set-output name=log::lab9.txt
       # ------------- issues ----------------
       - name: Create Issue From File
         uses: peter-evans/create-issue-from-file@v4
+        if: steps.id.outputs.log != ' '
         with:
           title: Issues Lab 9
           content-filepath: lab9.txt
-          issue-number: 5
           labels: |
             report
             automated issue
+        run:
+          echo "Erro no Lab 9"
+          exit 1

@@ -23,29 +23,36 @@ jobs:
       # ------------- Tests ----------------
       - name: test_lab3_part1
         run: |
-          cppcheck Lab3-PIO-IRQ/PIO/src -iLab3-PIO-IRQ/PIO/src/ASF --enable=style,warning,performance > lab3_1.txt
-
-      # ------------- Tests ----------------
-      - name: test_lab3_part2
-        run: |
-          cppcheck Lab3-OLED-PIO-IRQ/src -iLab3-OLED-PIO-IRQ/src/ASF --enable=style,warning,performance > lab3_2.txt
+          cppcheck Lab3-PIO-IRQ/PIO/src -iLab3-PIO-IRQ/PIO/src/ASF --enable=style,warning,performance 2> lab3_1.txt
+          echo ::set-output name=log::lab3_1.txt
       # ------------- issues ----------------
       - name: Create Issue From File
         uses: peter-evans/create-issue-from-file@v4
+        if: steps.id.outputs.log != ' '
         with:
           title: Issues Lab 3_1
           content-filepath: lab3_1.txt
-          issue-number: 10
           labels: |
             report
             automated issue
+        run:
+          echo "Erro no Lab 3.1"
+          exit 1
+      # ------------- Tests ----------------
+      - name: test_lab3_part2
+        run: |
+          cppcheck Lab3-OLED-PIO-IRQ/src -iLab3-OLED-PIO-IRQ/src/ASF --enable=style,warning,performance 2> lab3_2.txt
+          echo ::set-output name=log::lab3_2.txt
       # ------------- issues ----------------
       - name: Create Issue From File
         uses: peter-evans/create-issue-from-file@v4
+        if: steps.id.outputs.log != ' '
         with:
           title: Issues Lab 3_2
           content-filepath: lab3_2.txt
-          issue-number: 11
           labels: |
             report
             automated issue
+        run:
+          echo "Erro no Lab 3.2"
+          exit 1

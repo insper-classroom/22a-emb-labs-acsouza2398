@@ -22,14 +22,18 @@ jobs:
       # ------------- Tests ----------------
       - name: test_lab2
         run: |
-          cppcheck Lab2-PIO-Driver/src -iLab2-PIO-Driver/src/ASF --enable=style,warning,performance > lab2.txt
+          cppcheck Lab2-PIO-Driver/src -iLab2-PIO-Driver/src/ASF --enable=style,warning,performance 2> lab2.txt
+          echo ::set-output name=log::lab2.txt
       # ------------- issues ----------------
       - name: Create Issue From File
         uses: peter-evans/create-issue-from-file@v4
+        if: steps.id.outputs.log != ' '
         with:
           title: Issues Lab 2
           content-filepath: lab2.txt
-          issue-number: 4
           labels: |
             report
             automated issue
+          run:
+            echo "Erro no Lab 2"
+            exit 1

@@ -22,14 +22,18 @@ jobs:
       # ------------- Tests ----------------
       - name: test_lab4
         run: |
-          cppcheck Lab4-TC-RTC-RTT/src -iLab4-TC-RTC-RTT/src/ASF --enable=style,warning,performance > lab4.txt
+          cppcheck Lab4-TC-RTC-RTT/src -iLab4-TC-RTC-RTT/src/ASF --enable=style,warning,performance 2> lab4.txt
+          echo ::set-output name=log::lab4.txt
       # ------------- issues ----------------
       - name: Create Issue From File
         uses: peter-evans/create-issue-from-file@v4
+        if: steps.id.outputs.log != ' '
         with:
           title: Issues Lab 4
           content-filepath: lab4.txt
-          issue-number: 7
           labels: |
             report
             automated issue
+        run:
+          echo "Erro no Lab 4"
+          exit 1
