@@ -22,34 +22,30 @@ jobs:
 
       # ------------- Tests ----------------
       - name: test_lab3_part1
+        id: lab3_1
         run: |
           cppcheck Lab3-PIO-IRQ/PIO/src -iLab3-PIO-IRQ/PIO/src/ASF --enable=style,warning,performance 2> lab3_1.txt
           echo ::set-output name=log::lab3_1.txt
       # ------------- issues ----------------
       - name: Create Issue From File
         uses: peter-evans/create-issue-from-file@v4
-        if: steps.id.outputs.log != ' '
+        if: steps.lab3_1.outputs.log != ' '
         with:
           title: Issues Lab 3_1
           content-filepath: lab3_1.txt
           labels: |
             report
             automated issue
-      # ------------- Fail ----------------
-      - name: Error
-        if: steps.id.outputs.log != ' '
-        run:
-          echo "Erro no Lab 3.1"
-          exit 1
       # ------------- Tests ----------------
       - name: test_lab3_part2
+        id: lab3_2
         run: |
           cppcheck Lab3-OLED-PIO-IRQ/src -iLab3-OLED-PIO-IRQ/src/ASF --enable=style,warning,performance 2> lab3_2.txt
           echo ::set-output name=log::lab3_2.txt
       # ------------- issues ----------------
       - name: Create Issue From File
         uses: peter-evans/create-issue-from-file@v4
-        if: steps.id.outputs.log != ' '
+        if: steps.lab3_2.outputs.log != ' '
         with:
           title: Issues Lab 3_2
           content-filepath: lab3_2.txt
@@ -58,7 +54,15 @@ jobs:
             automated issue
       # ------------- Fail ----------------
       - name: Error
-        if: steps.id.outputs.log != ' '
-        run:
-          echo "Erro no Lab 3.2"
-          exit 1
+        if: steps.lab3_1.outputs.log != ' '
+        uses: actions/github-script@v3
+        with:
+          script: |
+            core.setFailed('Erro no Lab 3.1')
+      # ------------- Fail ----------------
+      - name: Error
+        if: steps.lab3_2.outputs.log != ' '
+        uses: actions/github-script@v3
+        with:
+          script: |
+            core.setFailed('Erro no Lab 3.2')

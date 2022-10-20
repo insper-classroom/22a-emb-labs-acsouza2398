@@ -21,13 +21,14 @@ jobs:
           sudo apt install cppcheck
       # ------------- Tests ----------------
       - name: test_lab5
+        id: lab5
         run: |
           cppcheck Lab5-HC-SR04/OLED-Xplained-Pro-SPI/src -iLab5-HC-SR04/OLED-Xplained-Pro-SPI/src/ASF --enable=style,warning,performance 2> lab5.txt
           echo ::set-output name=log::lab5.txt
       # ------------- issues ----------------
       - name: Create Issue From File
         uses: peter-evans/create-issue-from-file@v4
-        if: steps.id.outputs.log != ' '
+        if: steps.lab5.outputs.log != ' '
         with:
           title: Issues Lab 5
           content-filepath: lab5.txt
@@ -36,7 +37,8 @@ jobs:
             automated issue
       # ------------- Fail ----------------
       - name: Error
-        if: steps.id.outputs.log != ' '
-        run:
-          echo "Erro no Lab 5"
-          exit 1
+        if: steps.lab5.outputs.log != ' '
+        uses: actions/github-script@v3
+        with:
+          script: |
+            core.setFailed('Erro no Lab 5')

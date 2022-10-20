@@ -21,13 +21,14 @@ jobs:
           sudo apt install cppcheck
       # ------------- Tests ----------------
       - name: test_lab1
+        id: lab1
         run: |
           cppcheck 1-PIO-IO/src -i1-PIO-IO/src/ASF --enable=style,warning,performance 2> lab1.txt
           echo ::set-output name=log::lab1.txt
       # ------------- issues ----------------
       - name: Create Issue From File
         uses: peter-evans/create-issue-from-file@v4
-        if: steps.id.outputs.log != ' '
+        if: steps.lab1.outputs.log != ' '
         with:
           title: Issues Lab 1
           content-filepath: lab1.txt
@@ -36,7 +37,8 @@ jobs:
             automated issue
       # ------------- Fail ----------------
       - name: Error
-        if: steps.id.outputs.log != ' '
-        run:
-          echo "Erro no Lab 1"
-          exit 1
+        if: steps.lab1.outputs.log != ' '
+        uses: actions/github-script@v3
+        with:
+          script: |
+            core.setFailed('Erro no Lab 1')

@@ -21,13 +21,14 @@ jobs:
           sudo apt install cppcheck
       # ------------- Tests ----------------
       - name: test_lab7
+        id: lab7
         run: |
           cppcheck Lab7-RTOS-LCD-LVGL/src -iLab7-RTOS-LCD-LVGL/src/ASF --enable=style,warning,performance 2> lab7.txt
           echo ::set-output name=log::lab7.txt
       # ------------- issues ----------------
       - name: Create Issue From File
         uses: peter-evans/create-issue-from-file@v4
-        if: steps.id.outputs.log != ' '
+        if: steps.lab7.outputs.log != ' '
         with:
           title: Issues Lab 7
           content-filepath: lab7.txt
@@ -36,7 +37,8 @@ jobs:
             automated issue
       # ------------- Fail ----------------
       - name: Error
-        if: steps.id.outputs.log != ' '
-        run:
-          echo "Erro no Lab 7"
-          exit 1
+        if: steps.lab7.outputs.log != ' '
+        uses: actions/github-script@v3
+        with:
+          script: |
+            core.setFailed('Erro no Lab 7')
