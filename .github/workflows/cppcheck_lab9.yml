@@ -24,11 +24,11 @@ jobs:
         id: lab9
         run: |
           cppcheck Lab9-RTOS-WIFI/RTOS-WIFI-WINC1500-get-EXT1/src -iLab9-RTOS-WIFI/RTOS-WIFI-WINC1500-get-EXT1/src/ASF --enable=style,warning,performance 2> lab9.txt
-          echo ::set-output name=log::lab9.txt
+          echo "log=$lab9.txt" >>$GITHUB_OUTPUT
       # ------------- issues ----------------
       - name: Create Issue From File
         uses: peter-evans/create-issue-from-file@v4
-        if: steps.lab9.outputs.log != ' '
+        if: ${{ steps.test.log }}
         with:
           title: Issues Lab 9
           content-filepath: lab9.txt
@@ -37,7 +37,7 @@ jobs:
             automated issue
       # ------------- Fail ----------------
       - name: Error
-        if: steps.lab9.outputs.log != ' '
+        if: ${{ steps.test.log }}
         uses: actions/github-script@v3
         with:
           script: |
