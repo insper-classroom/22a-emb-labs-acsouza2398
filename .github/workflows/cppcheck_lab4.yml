@@ -24,11 +24,11 @@ jobs:
         id: lab4
         run: |
           cppcheck Lab4-TC-RTC-RTT/src -iLab4-TC-RTC-RTT/src/ASF --enable=style,warning,performance 2> lab4.txt
-          echo "log=$lab4.txt" >>$GITHUB_OUTPUT
+          echo ::set-output name=log::lab4.txt
       # ------------- issues ----------------
       - name: Create Issue From File
         uses: peter-evans/create-issue-from-file@v4
-        if: ${{ steps.test.log }}
+        if: steps.lab4.outputs.log != ' '
         with:
           title: Issues Lab 4
           content-filepath: lab4.txt
@@ -37,7 +37,7 @@ jobs:
             automated issue
       # ------------- Fail ----------------
       - name: Error
-        if: ${{ steps.test.log }}
+        if: steps.lab4.outputs.log != ' '
         uses: actions/github-script@v3
         with:
           script: |

@@ -24,11 +24,11 @@ jobs:
         id: lab7
         run: |
           cppcheck Lab7-RTOS-LCD-LVGL/src -iLab7-RTOS-LCD-LVGL/src/ASF --enable=style,warning,performance 2> lab7.txt
-          echo "log=$lab7.txt" >>$GITHUB_OUTPUT
+          echo ::set-output name=log::lab7.txt
       # ------------- issues ----------------
       - name: Create Issue From File
         uses: peter-evans/create-issue-from-file@v4
-        if: ${{ steps.test.log }}
+        if: steps.lab7.outputs.log != ' '
         with:
           title: Issues Lab 7
           content-filepath: lab7.txt
@@ -37,7 +37,7 @@ jobs:
             automated issue
       # ------------- Fail ----------------
       - name: Error
-        if: ${{ steps.test.log }}
+        if: steps.lab7.outputs.log != ' '
         uses: actions/github-script@v3
         with:
           script: |

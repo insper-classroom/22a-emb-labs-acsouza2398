@@ -23,12 +23,12 @@ jobs:
       - name: test_lab6_part1
         id: lab6_1
         run: |
-          cppcheck Lab6-PIO-IRQ-RTOS/PIO-IRQ-RTOS/src -iLab6-PIO-IRQ-RTOS/PIO-IRQ-RTOS/src/ASF --enable=style,warning,performance 2> lab6_1.txt
-          echo "log=$lab6_1.txt" >>$GITHUB_OUTPUT
+          cppcheck Lab6-PIO-IRQ-RTOS/PIO-IRQ-RTOS/src -iLab6-PIO-IRQ-RTOS/PIO-IRQ-RTOS/src/ASF --enable=style,warning,performance > lab6_1.txt
+          echo ::set-output name=log::lab6_1.txt
       # ------------- issues ----------------
       - name: Create Issue From File
         uses: peter-evans/create-issue-from-file@v4
-        if: ${{ steps.test.log }}
+        if: steps.lab6_1.outputs.log != ' '
         with:
           title: Issues Lab 6_1
           content-filepath: lab6_1.txt
@@ -40,11 +40,11 @@ jobs:
         id: lab6_2
         run: |
           cppcheck Lab6-ADC-IRQ-RTOS/src -iLab6-ADC-IRQ-RTOS/src/ASF --enable=style,warning,performance 2> lab6_2.txt
-          echo "log=$lab6_2.txt" >>$GITHUB_OUTPUT
+          echo ::set-output name=log::lab6_2.txt
       # ------------- issues ----------------
       - name: Create Issue From File
         uses: peter-evans/create-issue-from-file@v4
-        if: ${{ steps.test.log }}
+        if: steps.lab6_2.outputs.log != ' '
         with:
           title: Issues Lab 6_2
           content-filepath: lab6_2.txt
@@ -53,14 +53,14 @@ jobs:
             automated issue
       # ------------- Fail ----------------
       - name: Error
-        if: ${{ steps.test.log }}
+        if: steps.lab6_1.outputs.log != ' '
         uses: actions/github-script@v3
         with:
           script: |
             core.setFailed('Erro no Lab 6.1')
       # ------------- Fail ----------------
       - name: Error
-        if: ${{ steps.test.log }}
+        if: steps.lab6_2.outputs.log != ' '
         uses: actions/github-script@v3
         with:
           script: |

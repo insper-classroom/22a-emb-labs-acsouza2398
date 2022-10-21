@@ -24,11 +24,11 @@ jobs:
         id: lab8
         run: |
           cppcheck Lab8-RTOS-Mutex/src -iLab8-RTOS-Mutex/src/ASF --enable=style,warning,performance 2> lab8.txt
-          eecho "log=$lab8.txt" >>$GITHUB_OUTPUT
+          echo ::set-output name=log::lab8.txt
       # ------------- issues ----------------
       - name: Create Issue From File
         uses: peter-evans/create-issue-from-file@v4
-        if: ${{ steps.test.log }}
+        if: steps.lab8.outputs.log != ' '
         with:
           title: Issues Lab 8
           content-filepath: lab8.txt
@@ -37,7 +37,7 @@ jobs:
             automated issue
       # ------------- Fail ----------------
       - name: Error
-        if: ${{ steps.test.log }}
+        if: steps.lab8.outputs.log != ' '
         uses: actions/github-script@v3
         with:
           script: |

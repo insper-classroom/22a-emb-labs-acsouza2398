@@ -24,11 +24,11 @@ jobs:
         id: lab1
         run: |
           cppcheck 1-PIO-IO/src -i1-PIO-IO/src/ASF --enable=style,warning,performance 2> lab1.txt
-          echo "log=$lab1.txt" >>$GITHUB_OUTPUT
+          echo ::set-output name=log::lab1.txt
       # ------------- issues ----------------
       - name: Create Issue From File
         uses: peter-evans/create-issue-from-file@v4
-        if: ${{ steps.test.log }}
+        if: steps.lab1.outputs.log != ' '
         with:
           title: Issues Lab 1
           content-filepath: lab1.txt
@@ -37,7 +37,7 @@ jobs:
             automated issue
       # ------------- Fail ----------------
       - name: Error
-        if: ${{ steps.test.log }}
+        if: steps.lab1.outputs.log != ' '
         uses: actions/github-script@v3
         with:
           script: |
