@@ -24,7 +24,7 @@ jobs:
         id: lab7
         run: |
           cppcheck Lab7-RTOS-LCD-LVGL/src -iLab7-RTOS-LCD-LVGL/src/ASF --enable=style,warning,performance 2> lab7.txt
-          echo ::set-output name=log::lab7.txt
+          echo "log=$lab7.txt" >>$GITHUB_OUTPUT
       # ------------- issues ----------------
       - name: Create Issue From File
         uses: peter-evans/create-issue-from-file@v4

@@ -24,7 +24,7 @@ jobs:
         id: lab1
         run: |
           cppcheck 1-PIO-IO/src -i1-PIO-IO/src/ASF --enable=style,warning,performance 2> lab1.txt
-          echo ::set-output name=log::lab1.txt
+          echo "log=$lab1.txt" >>$GITHUB_OUTPUT
       # ------------- issues ----------------
       - name: Create Issue From File
         uses: peter-evans/create-issue-from-file@v4

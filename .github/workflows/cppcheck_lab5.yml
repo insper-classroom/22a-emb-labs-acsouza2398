@@ -24,7 +24,7 @@ jobs:
         id: lab5
         run: |
           cppcheck Lab5-HC-SR04/OLED-Xplained-Pro-SPI/src -iLab5-HC-SR04/OLED-Xplained-Pro-SPI/src/ASF --enable=style,warning,performance 2> lab5.txt
-          echo ::set-output name=log::lab5.txt
+          echo "log=$lab5.txt" >>$GITHUB_OUTPUT
       # ------------- issues ----------------
       - name: Create Issue From File
         uses: peter-evans/create-issue-from-file@v4

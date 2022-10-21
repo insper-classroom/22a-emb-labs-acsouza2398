@@ -24,7 +24,7 @@ jobs:
         id: lab4
         run: |
           cppcheck Lab4-TC-RTC-RTT/src -iLab4-TC-RTC-RTT/src/ASF --enable=style,warning,performance 2> lab4.txt
-          echo ::set-output name=log::lab4.txt
+          echo "log=$lab4.txt" >>$GITHUB_OUTPUT
       # ------------- issues ----------------
       - name: Create Issue From File
         uses: peter-evans/create-issue-from-file@v4

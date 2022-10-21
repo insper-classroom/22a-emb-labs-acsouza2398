@@ -24,7 +24,7 @@ jobs:
         id: lab2
         run: |
           cppcheck Lab2-PIO-Driver/src -iLab2-PIO-Driver/src/ASF --enable=style,warning,performance 2> lab2.txt
-          echo ::set-output name=log::lab2.txt
+          echo "log=$lab2.txt" >>$GITHUB_OUTPUT
       # ------------- issues ----------------
       - name: Create Issue From File
         uses: peter-evans/create-issue-from-file@v4

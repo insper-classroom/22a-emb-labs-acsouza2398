@@ -24,7 +24,7 @@ jobs:
         id: lab8
         run: |
           cppcheck Lab8-RTOS-Mutex/src -iLab8-RTOS-Mutex/src/ASF --enable=style,warning,performance 2> lab8.txt
-          echo ::set-output name=log::lab8.txt
+          echo "log=$lab8.txt" >>$GITHUB_OUTPUT
       # ------------- issues ----------------
       - name: Create Issue From File
         uses: peter-evans/create-issue-from-file@v4
