@@ -37,7 +37,7 @@ jobs:
             automated issue
       # ------------- Fail ----------------
       - name: Error
-        if: ${{ steps.test.log }}
+        if: s${{ steps.test.log }}
         uses: actions/github-script@v3
         with:
           script: |
