@@ -1,0 +1,59 @@
+name: cppcheck_lab6
+
+on:
+  push:
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.8"
+
+      - name: Install dependencies
+        run: |
+          sudo apt install cppcheck
+      # ------------- Tests ----------------
+      - name: test_lab6_part1
+        id: lab6_1
+        run: |
+          cppcheck Lab6-PIO-IRQ-RTOS/PIO-IRQ-RTOS/src -iLab6-PIO-IRQ-RTOS/PIO-IRQ-RTOS/src/ASF --enable=style,warning,performance > lab6_1.txt
+          cat lab6_1.txt
+      # ------------- issues ----------------
+      - name: Create Issue From File
+        uses: peter-evans/create-issue-from-file@v4
+        with:
+          title: Report Lab 6_1
+          content-filepath: lab6_1.txt
+          labels: |
+            report
+            automated issue
+      # ------------- Tests ----------------
+      - name: test_lab6_part2
+        id: lab6_2
+        run: |
+          cppcheck Lab6-ADC-IRQ-RTOS/src -iLab6-ADC-IRQ-RTOS/src/ASF --enable=style,warning,performance 2> lab6_2.txt
+          cat lab6_2.txt
+      # ------------- issues ----------------
+      - name: Create Issue From File
+        uses: peter-evans/create-issue-from-file@v4
+        with:
+          title: Report Lab 6_2
+          content-filepath: lab6_2.txt
+          labels: |
+            report
+            automated issue
+      # ------------- Fail ----------------
+      - name: Error
+        run: |
+          python3 .github/parser.py lab6_1.txt
+      # ------------- Fail ----------------
+      - name: Error
+        run: |
+          python3 .github/parser.py lab6_2.txt

@@ -1,0 +1,40 @@
+name: cppcheck_lab1
+
+on:
+  push:
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.8"
+
+      - name: Install dependencies
+        run: |
+          sudo apt install cppcheck
+      # ------------- Tests ----------------
+      - name: test_lab1
+        id: lab1
+        run: |
+          cppcheck 1-PIO-IO/src -i1-PIO-IO/src/ASF --enable=style,warning,performance 2> lab1.txt
+          cat lab1.txt
+      # ------------- issues ----------------
+      - name: Create Issue From File
+        uses: peter-evans/create-issue-from-file@v4
+        with:
+          title: Report Lab 1
+          content-filepath: lab1.txt
+          labels: |
+            report
+            automated issue
+      # ------------- Fail ----------------
+      - name: Error
+        run: |
+          python3 .github/parser.py lab1.txt

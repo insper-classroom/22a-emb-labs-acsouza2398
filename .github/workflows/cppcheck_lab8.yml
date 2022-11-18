@@ -1,0 +1,40 @@
+name: cppcheck_lab8
+
+on:
+  push:
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.8"
+
+      - name: Install dependencies
+        run: |
+          sudo apt install cppcheck
+      # ------------- Tests ----------------
+      - name: test_lab8
+        id: lab8
+        run: |
+          cppcheck Lab8-RTOS-Mutex/src -iLab8-RTOS-Mutex/src/ASF --enable=style,warning,performance 2> lab8.txt
+          cat lab8.txt
+      # ------------- issues ----------------
+      - name: Create Issue From File
+        uses: peter-evans/create-issue-from-file@v4
+        with:
+          title: Report Lab 8
+          content-filepath: lab8.txt
+          labels: |
+            report
+            automated issue
+      # ------------- Fail ----------------
+      - name: Error
+        run: |
+          python3 .github/parser.py lab8.txt

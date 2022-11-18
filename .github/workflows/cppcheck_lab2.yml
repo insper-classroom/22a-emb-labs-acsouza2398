@@ -1,0 +1,40 @@
+name: cppcheck_lab2
+
+on:
+  push:
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.8"
+
+      - name: Install dependencies
+        run: |
+          sudo apt install cppcheck
+      # ------------- Tests ----------------
+      - name: test_lab2
+        id: lab2
+        run: |
+          cppcheck Lab2-PIO-Driver/src -iLab2-PIO-Driver/src/ASF --enable=style,warning,performance 2> lab2.txt
+          cat lab2.txt
+      # ------------- issues ----------------
+      - name: Create Issue From File
+        uses: peter-evans/create-issue-from-file@v4
+        with:
+          title: Report Lab 2
+          content-filepath: lab2.txt
+          labels: |
+            report
+            automated issue
+      # ------------- Fail ----------------
+      - name: Error
+        run: |
+          python3 .github/parser.py lab2.txt
