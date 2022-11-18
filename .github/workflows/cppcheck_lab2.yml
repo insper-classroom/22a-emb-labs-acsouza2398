@@ -24,21 +24,17 @@ jobs:
         id: lab2
         run: |
           cppcheck Lab2-PIO-Driver/src -iLab2-PIO-Driver/src/ASF --enable=style,warning,performance 2> lab2.txt
-          echo "log=$lab2.txt" >>$GITHUB_OUTPUT
+          cat lab2.txt
       # ------------- issues ----------------
       - name: Create Issue From File
         uses: peter-evans/create-issue-from-file@v4
-        if: steps.lab2.outputs.log != ' '
         with:
-          title: Issues Lab 2
+          title: Report Lab 2
           content-filepath: lab2.txt
           labels: |
             report
             automated issue
       # ------------- Fail ----------------
       - name: Error
-        if: steps.lab2.outputs.log != ' '
-        uses: actions/github-script@v3
-        with:
-          script: |
-            core.setFailed('Erro no Lab 2')
+        run: |
+          python3 .github/parser.py lab2.txt

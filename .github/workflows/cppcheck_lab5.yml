@@ -24,21 +24,17 @@ jobs:
         id: lab5
         run: |
           cppcheck Lab5-HC-SR04/OLED-Xplained-Pro-SPI/src -iLab5-HC-SR04/OLED-Xplained-Pro-SPI/src/ASF --enable=style,warning,performance 2> lab5.txt
-          echo "log=$lab5.txt" >>$GITHUB_OUTPUT
+          cat lab5.txt
       # ------------- issues ----------------
       - name: Create Issue From File
         uses: peter-evans/create-issue-from-file@v4
-        if: steps.lab5.outputs.log != ' '
         with:
-          title: Issues Lab 5
+          title: Report Lab 5
           content-filepath: lab5.txt
           labels: |
             report
             automated issue
       # ------------- Fail ----------------
       - name: Error
-        if: steps.lab5.outputs.log != ' '
-        uses: actions/github-script@v3
-        with:
-          script: |
-            core.setFailed('Erro no Lab 5')
+        run: |
+          python3 .github/parser.py lab5.txt

@@ -24,13 +24,12 @@ jobs:
         id: lab6_1
         run: |
           cppcheck Lab6-PIO-IRQ-RTOS/PIO-IRQ-RTOS/src -iLab6-PIO-IRQ-RTOS/PIO-IRQ-RTOS/src/ASF --enable=style,warning,performance > lab6_1.txt
-          echo "log=$lab6_1.txt" >>$GITHUB_OUTPUT
+          cat lab6_1.txt
       # ------------- issues ----------------
       - name: Create Issue From File
         uses: peter-evans/create-issue-from-file@v4
-        if: steps.lab6_1.outputs.log != ' '
         with:
-          title: Issues Lab 6_1
+          title: Report Lab 6_1
           content-filepath: lab6_1.txt
           labels: |
             report
@@ -40,28 +39,21 @@ jobs:
         id: lab6_2
         run: |
           cppcheck Lab6-ADC-IRQ-RTOS/src -iLab6-ADC-IRQ-RTOS/src/ASF --enable=style,warning,performance 2> lab6_2.txt
-          echo "log=$lab6_2.txt" >>$GITHUB_OUTPUT
+          cat lab6_2.txt
       # ------------- issues ----------------
       - name: Create Issue From File
         uses: peter-evans/create-issue-from-file@v4
-        if: steps.lab6_2.outputs.log != ' '
         with:
-          title: Issues Lab 6_2
+          title: Report Lab 6_2
           content-filepath: lab6_2.txt
           labels: |
             report
             automated issue
       # ------------- Fail ----------------
       - name: Error
-        if: steps.lab6_1.outputs.log != ' '
-        uses: actions/github-script@v3
-        with:
-          script: |
-            core.setFailed('Erro no Lab 6.1')
+        run: |
+          python3 .github/parser.py lab6_1.txt
       # ------------- Fail ----------------
       - name: Error
-        if: steps.lab6_2.outputs.log != ' '
-        uses: actions/github-script@v3
-        with:
-          script: |
-            core.setFailed('Erro no Lab 6.2')
+        run: |
+          python3 .github/parser.py lab6_2.txt
